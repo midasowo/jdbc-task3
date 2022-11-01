@@ -33,15 +33,18 @@ Tabela powinna zawierać nazwę, autora oraz wydawnictwo.
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Homework3 {
     public static void main(String[] args) {
 
         final String jdbcUrl = ApplicationPropertiesProvider.getApplicationProperties().getProperty("jdbc.url");
 
-        final var rentedBooks = getRentedAndNotReturnedBooks(jdbcUrl);
-        System.out.println(rentedBooks);
-        //System.out.printf("Wypożyczone, ale nie oddane książki:\n\n%s", String.join("\n", rentedBooks));
+        final var booksStrings = getRentedAndNotReturnedBooks(jdbcUrl).stream()
+                .map(Books::toString)
+                .collect(Collectors.toList());
+
+        System.out.printf("Wypożyczone, ale nie oddane książki:\n\n%s", String.join("\n", booksStrings));
     }
 
     public static List<Books> getRentedAndNotReturnedBooks(String jdbcUrl) {
