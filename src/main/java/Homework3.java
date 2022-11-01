@@ -8,11 +8,10 @@ public class Homework3 {
 
         final String jdbcUrl = ApplicationPropertiesProvider.getApplicationProperties().getProperty("jdbc.url");
 
-        showRentedBooksNotReturned(jdbcUrl);
-
+        showRentedNotReturnedBooks(jdbcUrl);
     }
 
-    private static void showRentedBooksNotReturned(String jdbcUrl) {
+    private static void showRentedNotReturnedBooks(String jdbcUrl) {
         final var booksStrings = getRentedAndNotReturnedBooks(jdbcUrl).stream()
                 .map(Books::toString)
                 .collect(Collectors.toList());
