@@ -25,28 +25,40 @@ zrobić :slightly_smiling_face:
 Chciałbym, żeby każdy zrobił to zadanie choćby miało polegać na wykonaniu prostego selecta i wypisaniu wyników na System.out.
         */
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+/*
+Połączyć dwie tabele rents i books, by wypisać wszystkie wypożyczone i nieoddane książki.
+Tabela powinna zawierać nazwę, autora oraz wydawnictwo.
+*/
+
+import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Homework3 {
     public static void main(String[] args) {
 
-        try {
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sda", "java124", "test123");
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM sda.books;");
+        final String jdbcUrl = ApplicationPropertiesProvider.getApplicationProperties().getProperty("jdbc.url");
 
+        final var rentedBooks = getRentedAndNotReturnedBooks(jdbcUrl);
+        System.out.println(rentedBooks);
+        //System.out.printf("Wypożyczone, ale nie oddane książki:\n\n%s", String.join("\n", rentedBooks));
+    }
+
+    public static List<Books> getRentedAndNotReturnedBooks(String jdbcUrl) {
+        final List<Books> books = new LinkedList<>();
+        try (final Connection connection = DriverManager.getConnection(jdbcUrl)) {
+            ResultSet resultSet = connection.createStatement().executeQuery("SELECT books.`name`, books.author, books.publisher" +
+                    " FROM books JOIN rents ON books.ID = rents.book_id WHERE rents.return_date IS NULL;");
             while (resultSet.next()) {
-                System.out.println(resultSet.getString("name"));
+                String name = resultSet.getString("name");
+                String author = resultSet.getString("author");
+                String publisher = resultSet.getString("publisher");
+                Books book = new Books(name, author, publisher);
+                books.add(book);
             }
-        }
-        catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
-
+        return books;
     }
 }
