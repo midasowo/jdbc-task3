@@ -8,10 +8,14 @@ public class Homework3 {
 
         final String jdbcUrl = ApplicationPropertiesProvider.getApplicationProperties().getProperty("jdbc.url");
 
+        showRentedBooksNotReturned(jdbcUrl);
+
+    }
+
+    private static void showRentedBooksNotReturned(String jdbcUrl) {
         final var booksStrings = getRentedAndNotReturnedBooks(jdbcUrl).stream()
                 .map(Books::toString)
                 .collect(Collectors.toList());
-
         System.out.printf("Wypożyczone, ale nie oddane książki:\n\n%s", String.join("\n", booksStrings));
     }
 
