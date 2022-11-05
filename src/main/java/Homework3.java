@@ -58,7 +58,7 @@ public class Homework3 {
             try {
                 connection.setAutoCommit(false);
                 connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-                if (!isInventoryInStock(connection, bookId)) {
+                if (!isBookInStock(connection, bookId)) {
                     return Optional.empty();
                 }
                 final var rentalId = addRental(connection, bookId, cusId);
@@ -74,8 +74,9 @@ public class Homework3 {
         }
     }
 
-    private static boolean isInventoryInStock(Connection connection, int bookId) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(rents.ID) = 0 FROM rents JOIN books ON rents.book_id = books.ID WHERE book_id = ? AND rents.return_date IS NULL;");
+    private static boolean isBookInStock(Connection connection, int bookId) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(rents.ID) = 0 FROM rents " +
+                "JOIN books ON rents.book_id = books.ID WHERE book_id = ? AND rents.return_date IS NULL;");
         preparedStatement.setInt(1, bookId);
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.next();
